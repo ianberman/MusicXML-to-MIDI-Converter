@@ -7,11 +7,6 @@ def process_mxl_file(input_file, input_dir, output_dir):
         # Load the MusicXML file
         score = converter.parse(input_file)
 
-        # Check if the score has 4 parts
-        if len(score.parts) != 4:
-            print(f"Skipping {input_file} as it does not have 4 parts.")
-            return
-
         # Construct relative path from input_dir to maintain directory structure
         relative_path = os.path.relpath(os.path.dirname(input_file), input_dir)
         specific_output_dir = os.path.join(output_dir, relative_path)
@@ -59,6 +54,7 @@ def main():
         for file in files:
             if file.endswith(".mxl"):
                 input_file = os.path.join(root, file)
+                print("processing: " + input_file)
                 process_mxl_file(input_file, args.input_dir, args.output_dir)
 
 if __name__ == "__main__":

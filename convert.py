@@ -2,8 +2,10 @@ import argparse
 import os
 from music21 import converter, midi
 
-def process_mxl_file(input_file, input_dir, output_dir):
+def process_mxl_file(input_file, input_dir, output_dir, verbose):
     try:
+        if verbose:
+            print(f"processing: {input_file}")
         # Load the MusicXML file
         score = converter.parse(input_file)
 
@@ -36,26 +38,33 @@ def process_mxl_file(input_file, input_dir, output_dir):
         print(f"Error processing {input_file}: {e}")
 
 def main():
-    parser = argparse.ArgumentParser(description="Process MusicXML files and convert to a single combined MIDI file.")
+    parser = argparse.ArgumentParser(description="Process MusicXML files and convert to MIDI.")
     parser.add_argument("input_dir", type=str, help="Directory containing MusicXML files")
-    parser.add_argument("output_dir", type=str, help="Directory to save combined MIDI files")
+    parser.add_argument("output_dir", type=str, help="Directory to save MIDI files")
+    parser.add_argument("--verbose", action="store_true", help="enable prints")
 
     args = parser.parse_args()
 
-    if os.path.abspath(args.output_dir).startswith(os.path.abspath(args.input_dir)):
-        print("The output directory cannot be inside the input directory.")
+    input_dir_abs = os.path.abspath(args.input_dir)
+    output_dir_abs = os.path.abspath(args.output_dir)
+
+    if output_dir_abs.startswith(input_dir_abs):
+        print("Output directory cannot be inside the input directory.")
         return
 
-    for root, dirs, files in os.walk(args.input_dir):
-        # Skip the output directory if it is inside the input directory
-        if args.output_dir.startswith(root):
+    if args.verbose:
+        print(f"Input Directory: {input_dir_abs}")
+        print(f"Output Directory: {output_dir_abs}")
+
+    supported_extensions = (".musicxml", ".xml", ".mxl")
+    for root, _, files in os.walk(input_dir_abs):
+        if output_dir_abs.startswith(root):
             continue
 
         for file in files:
-            if file.endswith(".mxl"):
+            if file.lower().endswith(supported_extensions):
                 input_file = os.path.join(root, file)
-                print("processing: " + input_file)
-                process_mxl_file(input_file, args.input_dir, args.output_dir)
+                process_mxl_file(input_file, input_dir_abs, output_dir_abs, args.verbose)
 
 if __name__ == "__main__":
     main()

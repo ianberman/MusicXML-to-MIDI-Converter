@@ -1,7 +1,6 @@
 Simple converter script for MusicXML files to midi files. 
 
-Requires music21 https://web.mit.edu/music21/doc/usersGuide/usersGuide_01_installing.html
-..which runs on python 3.10+
+Requires [music21]([url](https://web.mit.edu/music21/doc/usersGuide/usersGuide_01_installing.html)) which runs on python 3.10+
 
 run with `python convert.py input_dir output_dir` with optional flag `--verbose` for print statements.
 
